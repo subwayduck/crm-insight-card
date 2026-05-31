@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CRM Context</title>
+
+  <!-- Kustomer KApp SDK -->
+  <script src="https://cdn.kustomerapp.com/card-js/latest/kustomer-card.min.js"></script>
+
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <div id="state-loading" class="state">
+    <div class="spinner"></div>
+    <span>Loading CRM data…</span>
+  </div>
+
+  <div id="state-error" class="state hidden">
+    <div class="icon">⚠️</div>
+    <p class="fallback-msg">No CRM context available.</p>
+  </div>
+
+  <div id="state-data" class="state hidden">
+    <div class="card">
+      <div class="field">
+        <span class="label">Membership Plan</span>
+        <span class="value badge" id="field-plan">—</span>
+      </div>
+      <div class="divider"></div>
+      <div class="field">
+        <span class="label">Customer Type</span>
+        <span class="value badge badge-vip" id="field-type">—</span>
+      </div>
+      <div class="divider"></div>
+      <div class="field field-notes">
+        <span class="label">Notes</span>
+        <span class="value notes" id="field-notes">—</span>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
