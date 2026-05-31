@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────────────────────
-//  CRM Insight Card — app.js
+//  CRM Insight Card — app.js  (corrected for real Cards SDK API)
 // ─────────────────────────────────────────────────────────────
 
 const CRM_ENDPOINT = 'https://indy-crm.free.beeceptor.com/crm/customer';
@@ -11,6 +11,9 @@ function showState(name) {
   ['loading', 'error', 'data'].forEach((s) => {
     $(`state-${s}`).classList.toggle('hidden', s !== name);
   });
+  if (window.Kustomer && typeof Kustomer.resize === 'function') {
+    Kustomer.resize();
+  }
 }
 
 function renderCRMData(data) {
@@ -61,18 +64,21 @@ async function fetchCRMData(customerEmail) {
   }
 }
 
-Kustomer.initialize({}, () => {
-  Kustomer.context({ page: 'customer' }, (context, err) => {
-    if (err || !context) {
-      console.warn('[CRM Card] No Kustomer context available:', err);
-      fetchCRMData(null);
-      return;
+// Pull the primary email out of the real context shape, defensively.
+function extractEmail(contextJSON) {
+  try {
+    const emails = contextJSON?.customer?.attributes?.emails;
+    if (Array.isArray(emails) && emails.length) {
+      return emails[0].email ?? null;
     }
-    const customerEmail =
-      context?.customer?.email
-      ?? context?.customer?.emails?.[0]
-      ?? null;
-    console.info('[CRM Card] Customer context loaded. Email:', customerEmail);
-    fetchCRMData(customerEmail);
-  });
+  } catch (e) { /* fall through */ }
+  return null;
+}
+
+// Real Cards SDK: single callback, receives context directly.
+// Calling initialize is also what makes the card render in the panel.
+Kustomer.initialize(function (contextJSON) {
+  const email = extractEmail(contextJSON);
+  console.info('[CRM Card] Context loaded. Email:', email);
+  fetchCRMData(email);
 });
